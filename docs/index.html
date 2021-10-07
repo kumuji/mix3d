@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Mix3D: Out-of-Context Data Augmentation for 3D Scenes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./w3.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-158623422-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-158623422-1');
+  </script>
+  <style>
+
+.carousel-indicators li {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-right: 5px;
+    margin-left: 5px;
+    cursor: pointer;
+    background-color: #FFF;
+    opacity: .7;
+    transition: opacity .6s ease;
+    border: 1px solid black;
+  }
+
+  .sem-label {
+    margin-top: 2px;
+    margin-bottom: -2px;
+    margin-left: -2px;
+    margin-right: 5px;
+    min-width: 15px;
+    min-height: 15px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 0px solid black;
+  }
+  </style>
+</head>
+
+<body>
+
+<br>
+</br>
+<h3 align="center" id="title">Mix3D: Out-of-Context Data Augmentation for 3D Scenes</h3>
+
+  <br>
+  </br>
+  <p align="center" class="center_text" id="authors">
+    <a target="_blank" href="https://nekrasov.dev/">Alexey Nekrasov</a><sup>🔷m*</sup>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a target="_blank" href="https://www.vision.rwth-aachen.de/person/219/">Jonas Schult</a><sup>🔷*</sup>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a target="_blank" href="https://orlitany.github.io/">Or Litany</a><sup>❇️</sup>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a target="_blank" href="https://www.vision.rwth-aachen.de/person/1/">Bastian Leibe</a><sup>🔷</sup>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a target="_blank" href="http://francisengelmann.github.com/">Francis Engelmann</a><sup>🔷◼️</sup>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+  </p>
+
+  <p class="center_text" align="center">
+    <sup>🔷</sup>RWTH Aachen University
+    &nbsp; &nbsp; &nbsp;
+    <sup>❇️</sup>NVIDIA
+    &nbsp; &nbsp; &nbsp;
+    <sup>◼️</sup>ETH AI Center
+    <br>
+    m - the contribution is part of a Master thesis research
+    <br>
+    * - equal contribution
+  </p>
+
+  <p align="center" id="title">International Conference on 3D Vision (3DV), 2021.</p>
+
+<br>
+</span>
+<div class="w3-container" id="paper">
+  <div class="w3-content" style="max-width:850px">
+    <br><center><img src="teaser.jpg" style="max-width:100%" /></center><br>
+    <p>
+    Mix3D is a data augmentation technique for segmenting large-scale 3D scenes. Since scene context helps reasoning about object semantics, current works focus on models with large capacity and receptive fields that can fully capture the global context of an input 3D scene. However, strong contextual priors can have detrimental implications like mistaking a pedestrian crossing the street for a car. In this work, we focus on the importance of balancing global scene context and local geometry, with the goal of generalizing beyond the contextual priors in the training set. In particular, we propose a "mixing" technique which creates new training samples by combining two augmented scenes. By doing so, object instances are implicitly placed into novel out-of-context environments and therefore making it harder for models to rely on scene context alone, and instead infer semantics from local structure as well.
+    </p>
+
+    <p>
+    In the paper, we perform detailed analysis to understand the importance of global context, local structures and the effect of mixing scenes. In experiments, we show that models trained with Mix3D profit from a significant performance boost on indoor (ScanNet, S3DIS) and outdoor datasets (SemanticKITTI). Mix3D can be trivially used with any existing method, e.g., trained with Mix3D, MinkowskiNet outperforms all prior state-of-the-art methods by a significant margin on the ScanNet test benchmark 78.1 mIoU.
+    </p>
+
+    <p>
+    Code available on GitHub: <a href="https://github.com/kumuji/mix3d">https://github.com/kumuji/mix3d/ </a>
+    </p>
+
+    <h3 class="w3-left-align" id="publication"><b>Publication</b></h3>
+    <a href="mix3d.pdf">Paper </a>International Conference on 3D Vision (3DV), 2021.</br></br>
+    <center>
+      <a href="mix3d.pdf"><img src="paper.jpg" style="max-width:100%" /></a>
+      </center><br>
+
+      <h3 class="w3-left-align" id="bibtex"><b>BibTeX</b></h3>
+    <pre class="w3-panel w3-leftbar w3-light-grey" style="white-space: pre-wrap; font-family: monospace; font-size: 11px">
+        @inproceedings{mix3d,
+        title = {{Mix3D: Out-of-Context Data Augmentation for 3D Scenes}},
+        author = {Nekrasov, Alexey and Schult, Jonas and Engelmann, Francis and Or, Litany and Leibe, Bastian},
+        booktitle = {{International Conference on 3D Vision (3DV), 2021.}},
+        year = {2021}
+        }
+    </pre>
+
+    AKNOWLEDGMENTS
+  </div>
+</div>
+
+</body>
+</html>
