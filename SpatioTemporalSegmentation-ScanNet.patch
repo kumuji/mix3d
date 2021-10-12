@@ -1,0 +1,205 @@
+diff --git a/config.py b/config.py
+index e1249ea..94f4160 100644
+--- a/config.py
++++ b/config.py
+@@ -74,7 +74,7 @@ dir_arg.add_argument('--data_dir', type=str, default='data')
+ 
+ # Data
+ data_arg = add_argument_group('Data')
+-data_arg.add_argument('--dataset', type=str, default='ScannetSparseVoxelizationDataset')
++data_arg.add_argument('--dataset', type=str, default='ScannetSparseVoxelizationDataset2cm')
+ data_arg.add_argument('--point_lim', type=int, default=-1)
+ data_arg.add_argument('--pre_point_lim', type=int, default=-1)
+ data_arg.add_argument('--batch_size', type=int, default=16)
+@@ -91,12 +91,13 @@ data_arg.add_argument('--return_transformation', type=str2bool, default=False)
+ data_arg.add_argument('--ignore_duplicate_class', type=str2bool, default=False)
+ data_arg.add_argument('--partial_crop', type=float, default=0.)
+ data_arg.add_argument('--train_limit_numpoints', type=int, default=0)
++data_arg.add_argument('--merge', type=str2bool, default=False)
+ 
+ # Point Cloud Dataset
+ data_arg.add_argument(
+     '--scannet_path',
+     type=str,
+     default='/cvgl2/u/jgwak/Datasets/scannet',
+     help='Scannet online voxelization dataset root dir')
+ 
+ # Training / test parameters
+
+diff --git a/lib/dataset.py b/lib/dataset.py
+index 5c820f2..e2fc437 100644
+--- a/lib/dataset.py
++++ b/lib/dataset.py
+@@ -9,6 +9,7 @@ from tqdm import tqdm
+ import os.path as osp
+ from pathlib import Path
+ from collections import defaultdict
++import volumentations as V
+ import random
+ import numpy as np
+ from enum import Enum
+@@ -89,6 +90,7 @@ class DictDataset(Dataset, ABC):
+                input_transform=None,
+                target_transform=None,
+                cache=False,
++               merge=False,
+                data_root='/'):
+     """
+     data_paths: list of lists, [[str_path_to_input, str_path_to_label], [...]]
+@@ -168,6 +170,7 @@ class VoxelizationDatasetBase(DictDataset, ABC):
+                explicit_rotation=-1,
+                ignore_mask=255,
+                return_transformation=False,
++               merge=False,
+                **kwargs):
+     """
+     ignore_mask: label value for ignore class. It will not be used as a class in the loss or evaluation.
+@@ -179,6 +182,7 @@ class VoxelizationDatasetBase(DictDataset, ABC):
+         input_transform=input_transform,
+         target_transform=target_transform,
+         cache=cache,
++        merge=merge,
+         data_root=data_root)
+ 
+     self.ignore_mask = ignore_mask
+@@ -190,7 +194,10 @@ class VoxelizationDatasetBase(DictDataset, ABC):
+ 
+   def load_ply(self, index):
+     filepath = self.data_root / self.data_paths[index]
+-    return read_plyfile(filepath), None
++    # if ".npy" in str(filepath):
++    return np.load(filepath)[:, :-1], None
++    # else:
++    #   return read_plyfile(filepath), None
+ 
+   def __len__(self):
+     num_data = len(self.data_paths)
+@@ -225,11 +232,19 @@ class SparseVoxelizationDataset(VoxelizationDatasetBase):
+                augment_data=False,
+                elastic_distortion=False,
+                config=None,
++               merge=False,
+                **kwargs):
+ 
+     self.augment_data = augment_data
+     self.elastic_distortion = elastic_distortion
+     self.config = config
++    self.merge = merge
++    self.augs = V.Compose([
++        V.Scale3d(always_apply=True),
++        V.RotateAroundAxis3d(always_apply=True, axis=(0,0,1), rotation_limit=[-np.pi, np.pi]),
++        V.RotateAroundAxis3d(always_apply=True, axis=(0,1,0), rotation_limit=[-np.pi/24, np.pi/24]),
++        V.RotateAroundAxis3d(always_apply=True, axis=(1,0,0), rotation_limit=[-np.pi/24, np.pi/24])
++        ])
+     VoxelizationDatasetBase.__init__(
+         self,
+         data_paths,
+@@ -285,12 +301,41 @@ class SparseVoxelizationDataset(VoxelizationDatasetBase):
+     else:
+       rotation_angle = None
+     pointcloud, center = self.load_ply(index)
++
+     if self.PREVOXELIZE_VOXEL_SIZE is not None:
+       inds = ME.SparseVoxelize(pointcloud[:, :3] / self.PREVOXELIZE_VOXEL_SIZE, return_index=True)
+       pointcloud = pointcloud[inds]
+ 
+     if self.elastic_distortion:
+       pointcloud = self._augment_elastic_distortion(pointcloud)
++
++    if (random.random() < 0.80) and self.merge:
++        sampled_index=random.randint(0, self.__len__() - 1)
++        coords, feats, labels = self.convert_mat2cfl(pointcloud)
++
++        pointcloud1, _ = self.load_ply(sampled_index)
++        if self.PREVOXELIZE_VOXEL_SIZE is not None:
++            inds = ME.SparseVoxelize(pointcloud1[:, :3] / self.PREVOXELIZE_VOXEL_SIZE, return_index=True)
++            pointcloud1 = pointcloud1[inds]
++        if self.elastic_distortion:
++            pointcloud1 = self._augment_elastic_distortion(pointcloud1)
++        coords1, feats1, labels1 = self.convert_mat2cfl(pointcloud1)
++        color1, normals1 = feats1[:, :3], feats1[:, 3:]
++        aug = self.augs(points=coords1, features=color1, normals=normals1, labels=labels1)
++        coords1, color1, labels1, normals1 = (aug["points"], aug["features"], aug["labels"], aug["normals"])
++        feats1 = np.hstack((color1, normals1))
++        # coords1, feats1, labels1 = self.prevoxel_transform(coords1, feats1, labels1)
++
++        coords -= coords.mean(0)
++        coords += np.random.uniform(coords.min(0), coords.max(0)) / 2
++        coords1 -= coords1.mean(0)
++        # coords1 += np.random.uniform(coords1.min(0), coords1.max(0)) / 2
++        coords = np.concatenate((coords, coords1))
++        feats = np.concatenate((feats, feats1))
++        labels = np.concatenate((labels, labels1))
++        center = None
++        coords -= coords.mean(0)
++        pointcloud = np.hstack((coords, feats, labels[:, None]))
+ 
+     # import open3d as o3d
+     # from lib.open3d_utils import make_pointcloud
+@@ -456,6 +502,7 @@ def initialize_data_loader(DatasetClass,
+                            augment_data,
+                            batch_size,
+                            limit_numpoints,
++                           merge,
+                            elastic_distortion=False,
+                            input_transform=None,
+                            target_transform=None):
+@@ -493,6 +541,7 @@ def initialize_data_loader(DatasetClass,
+       cache=config.cache_data,
+       augment_data=augment_data,
+       elastic_distortion=elastic_distortion,
++      merge=merge,
+       phase=phase)
+ 
+   if repeat:
+diff --git a/lib/datasets/scannet.py b/lib/datasets/scannet.py
+index 44648c6..d8b6f65 100644
+--- a/lib/datasets/scannet.py
++++ b/lib/datasets/scannet.py
+@@ -99,6 +99,7 @@ class ScannetSparseVoxelizationDataset(SparseVoxelizationDataset):
+                augment_data=True,
+                elastic_distortion=False,
+                cache=False,
++               merge=False,
+                phase=DatasetPhase.Train):
+     if isinstance(phase, str):
+       phase = str2datasetphase_type(phase)
+@@ -117,6 +118,7 @@ class ScannetSparseVoxelizationDataset(SparseVoxelizationDataset):
+         return_transformation=config.return_transformation,
+         augment_data=augment_data,
+         elastic_distortion=elastic_distortion,
++        merge=merge,
+         config=config)
+ 
+   def get_output_id(self, iteration):
+diff --git a/main.py b/main.py
+index 24045c6..f84ad37 100644
+--- a/main.py
++++ b/main.py
+@@ -79,6 +79,7 @@ def main():
+         elastic_distortion=config.train_elastic_distortion,
+         shuffle=True,
+         repeat=True,
++        merge=config.merge,
+         batch_size=config.batch_size,
+         limit_numpoints=config.train_limit_numpoints)
+     val_data_loader = initialize_data_loader(
+@@ -89,6 +90,7 @@ def main():
+         augment_data=False,
+         elastic_distortion=config.test_elastic_distortion,
+         shuffle=True,
++        merge=False,
+         repeat=False,
+         batch_size=config.val_batch_size,
+         limit_numpoints=False)
+@@ -108,9 +111,10 @@ def main():
+         elastic_distortion=config.test_elastic_distortion,
+         shuffle=False,
+         repeat=False,
++        merge=False,
+         batch_size=config.test_batch_size,
+         limit_numpoints=False)
+     if test_data_loader.dataset.NUM_IN_CHANNEL is not None:
+       num_in_channel = test_data_loader.dataset.NUM_IN_CHANNEL
+     else:
+       num_in_channel = 3

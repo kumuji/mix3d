@@ -1,0 +1,24 @@
+# @package data
+
+train_collation:
+  _target_: mix3d.datasets.utils.VoxelizeCollate
+  ignore_label: ${data.ignore_label}
+  voxel_size: ${data.voxel_size}
+  mode: ${data.train_mode}
+  small_crops: false
+  very_small_crops: false
+  batch_instance: false
+
+validation_collation:
+  _target_: mix3d.datasets.utils.VoxelizeCollate
+  ignore_label: ${data.ignore_label}
+  voxel_size: ${data.voxel_size}
+  mode: ${data.validation_mode}
+  batch_instance: false
+
+test_collation:
+  _target_: mix3d.datasets.utils.VoxelizeCollate
+  ignore_label: ${data.ignore_label}
+  voxel_size: ${data.voxel_size}
+  mode: ${data.test_mode}
+  batch_instance: false

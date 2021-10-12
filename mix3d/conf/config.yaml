@@ -1,0 +1,38 @@
+general:
+  seed: null
+  checkpoint: null # continue with weights
+  freeze_backbone: false # train only last layer
+
+  project_name: mix3d
+  workspace: kumuji
+  experiment_name: baseline
+
+  save_dir: saved/${general.experiment_name}/${now:%Y-%m-%d_%H%M}
+  # time/commit/md5(config)_uuid
+  # time/experiment_id/version_uuid
+  experiment_id: ??? # commit[:8], or unique from logger
+  version: ??? # md5[:8] of config
+
+  gpus: ???
+
+defaults:
+  - data: indoor
+  - data/data_loaders: simple_loader
+  - data/datasets: scannet
+  - data/collation_functions: voxelize_collate
+  - logging: base
+  - model: baseline
+  - metrics: miou
+  - optimizer: adamw
+  - scheduler: onecyclelr
+  - trainer: trainer
+  - callbacks: callbacks
+  - loss: cross_entropy
+
+hydra:
+  run:
+    dir: saved/hydra_logs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: saved/hydra_logs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    # dir: ${general.save_dir}
+    subdir: ${hydra.job.num}_${hydra.job.id}

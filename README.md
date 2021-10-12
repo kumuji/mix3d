@@ -1,3 +1,4 @@
+<div align="center">
 # Mix3D: Out-of-Context Data Augmentation for 3D Scenes (3DV 2021)
 
 Alexey Nekrasov*, Jonas Schult*, Or Litany, Bastian Leibe, Francis Engelmann

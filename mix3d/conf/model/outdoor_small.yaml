@@ -1,0 +1,10 @@
+# @package _group_
+_target_: mix3d.models.Res16UNet14A
+config:
+  dialations: [1, 1, 1, 1]
+  conv1_kernel_size: 3
+  bn_momentum: 0.02
+# depends on normals, color, raw_coordinates
+# varies from 3 to 9
+in_channels: ${data.in_channels}
+out_channels: ${data.num_labels}

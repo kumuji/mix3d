@@ -1,0 +1,69 @@
+stages:
+  scannet:
+    cmd: poetry run python mix3d/datasets/preprocessing/scannet_preprocessing.py
+      preprocess --git_repo=data/raw/scannet/ScanNet --data_dir=data/raw/scannet/scannet
+      --save_dir=data/processed/scannet
+    deps:
+    - mix3d/datasets/preprocessing/scannet_preprocessing.py
+    outs:
+    - data/processed/scannet/color_mean_std.yaml
+    - data/processed/scannet/label_database.yaml
+    - data/processed/scannet/test
+    - data/processed/scannet/test_database.yaml
+    - data/processed/scannet/train
+    - data/processed/scannet/train_database.yaml
+    - data/processed/scannet/train_validation_database.yaml
+    - data/processed/scannet/validation
+    - data/processed/scannet/validation_database.yaml
+  scannet_instance:
+    cmd: poetry run python mix3d/datasets/preprocessing/scannet_preprocessing.py
+      make_instance_database --train_database_path=data/processed/scannet/train_database.yaml
+      --git_repo=data/raw/scannet/ScanNet --data_dir=data/raw/scannet/scannet --save_dir=data/processed/scannet
+    deps:
+    - data/processed/scannet/train_database.yaml
+    - mix3d/datasets/preprocessing/scannet_preprocessing.py
+    outs:
+    - data/processed/scannet/instance_database.yaml
+    - data/processed/scannet/instances
+  rio:
+    cmd: poetry run python mix3d/datasets/preprocessing/rio_preprocessing.py preprocess
+      --data_dir=data/raw/rio/rio --save_dir=data/processed/rio --git_repo=data/raw/rio/3RScan
+      --label_db=data/processed/scannet/label_database.yaml
+    deps:
+    - data/processed/scannet/label_database.yaml
+    - mix3d/datasets/preprocessing/rio_preprocessing.py
+    outs:
+    - data/processed/rio/test
+    - data/processed/rio/test_database.yaml
+    - data/processed/rio/train
+    - data/processed/rio/train_database.yaml
+    - data/processed/rio/validation
+    - data/processed/rio/validation_database.yaml
+  matterport:
+    cmd: poetry run python mix3d/datasets/preprocessing/matterport_preprocessing.py
+      preprocess --data_dir=data/raw/matterport/v1 --save_dir=data/processed/matterport
+      --git_repo=data/raw/matterport/Matterport --label_db=data/processed/scannet/label_database.yaml
+    deps:
+    - data/processed/scannet/label_database.yaml
+    - mix3d/datasets/preprocessing/matterport_preprocessing.py
+    outs:
+    - data/processed/matterport/test
+    - data/processed/matterport/test_database.yaml
+    - data/processed/matterport/train
+    - data/processed/matterport/train_database.yaml
+    - data/processed/matterport/validation
+    - data/processed/matterport/validation_database.yaml
+  semantic_kitti:
+    cmd: poetry run python mix3d/datasets/preprocessing/semantic_kitti_preprocessing.py
+      preprocess_sequential --git_repo=data/raw/semantic-kitti-api --data_dir=data/raw/SemanticKITTI/dataset
+      --save_dir=data/processed/semantic_kitti
+    deps:
+    - mix3d/datasets/preprocessing/semantic_kitti_preprocessing.py
+    outs:
+    - data/processed/semantic_kitti/label_database.yaml
+    - data/processed/semantic_kitti/test
+    - data/processed/semantic_kitti/test_database.yaml
+    - data/processed/semantic_kitti/train
+    - data/processed/semantic_kitti/train_database.yaml
+    - data/processed/semantic_kitti/validation
+    - data/processed/semantic_kitti/validation_database.yaml

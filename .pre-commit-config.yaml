@@ -1,0 +1,49 @@
+repos:
+  # for jupyter notebooks
+  - repo: https://github.com/kynan/nbstripout
+    rev: master
+    hooks:
+      - id: nbstripout
+        files: ".ipynb"
+  - repo: https://github.com/nbQA-dev/nbQA
+    rev: 0.5.4
+    hooks:
+      - id: nbqa-black
+        additional_dependencies: [black==20.8b1]
+      - id: nbqa-pyupgrade
+        additional_dependencies: [pyupgrade==2.7.3]
+      - id: nbqa-isort
+        additional_dependencies: [isort==5.6.4]
+
+  # for python files
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        entry: python -m black
+        args: [--config, ./pyproject.toml]
+        language: system
+        types: [python]
+
+      - id: flake8
+        name: flake8
+        entry: python -m flake8
+        language: system
+        types: [python]
+
+      - id: pyupgrade
+        name: pyupgrade
+        entry: python -m pyupgrade --py38-plus
+        types: [python]
+        language: system
+
+  # general syntax hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: end-of-file-fixer
+      - id: check-symlinks

@@ -1,0 +1,100 @@
+[build-system]
+requires = ["poetry>=1.0"]
+build-backend = "poetry.masonry.api"
+
+[tool.poetry]
+name = "mix3d"
+version = "0.1.0"
+description="Mix3D: Out-of-Context Data Augmentation for 3D Scenes (3DV 2021)"
+authors = ["alexey <alexey@nekrasov.dev>"]
+readme = "README.md"
+homepage="https://github.com/kumuji/mix3d"
+repository="https://github.com/kumuji/mix3d"
+license = "MIT"
+classifiers=[
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',
+]
+
+[tool.poetry.dependencies]
+# main parts
+python = "^3.7"
+torch = "^1.5.0"
+torchvision = "^0.6.0"
+pytorch-lightning = "^1.1.1"
+MinkowskiEngine = "^0.4.3"
+open3d = "0.9.0"
+volumentations = "^0.1.0"
+albumentations = "^0.4.5"
+plyfile = "^0.7.1"
+# environment control
+gitpython = "^3.1.0"
+python-dotenv = "^0.12.0"
+hydra-core = "^1.0.4"
+# logging
+neptune-client = "^0.4.107"
+loguru = "^0.4.1"
+psutil = "^5.7.0"
+# viz
+plotly = "^4.6.0"
+seaborn = "^0.10.1"
+pyviz3d = "^0.2.19"
+# other
+pandas = "^1.1.0"
+joblib = "^0.14.1"
+natsort = "^7.0.1"
+fire = "^0.2.1"
+importlib_metadata = {version = "^1.6.0", python = "<3.8"}
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.3.5"
+dvc = "^1.0.1"
+pudb = "^2019.2"
+pytest-pudb = "^0.7.0"
+black = "^19.10b0"
+flake8 = "^3.8.1"
+pre-commit = "^2.4.0"
+
+[tool.poetry.extras]
+
+[tool.black]
+# https://github.com/psf/black
+line-length = 88
+target-version = ["py38"]
+exclude = "(.eggs|.git|.hg|.mypy_cache|.nox|.tox|.venv|.svn|_build|buck-out|build|dist)"
+
+[tool.isort]
+# https://github.com/timothycrosley/isort/
+known_typing = "typing,types,typing_extensions,mypy,mypy_extensions"
+known_third_party = "nox,numpy,pytest"
+sections = "FUTURE,TYPING,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
+include_trailing_comma = true
+default_section = "FIRSTPARTY"
+multi_line_output = 3
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 88
+
+[tool.nbqa.mutate]
+isort = 1
+black = 1
+pyupgrade = 1
+
+[tool.nbqa.addopts]
+pyupgrade = ["--py38-plus"]
+
+[tool.poetry.scripts]
+train = 'mix3d.__main__:train'
+test = 'mix3d.__main__:test'

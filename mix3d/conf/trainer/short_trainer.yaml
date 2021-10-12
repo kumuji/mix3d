@@ -1,0 +1,7 @@
+# @package _group_
+deterministic: true
+max_epochs: 50
+min_epochs: 1
+weights_summary: "top"
+resume_from_checkpoint: null
+check_val_every_n_epoch: 5

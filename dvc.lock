@@ -1,0 +1,156 @@
+scannet:
+  cmd: poetry run python mix3d/datasets/preprocessing/scannet_preprocessing.py preprocess
+    --git_repo=data/raw/scannet/ScanNet --data_dir=data/raw/scannet/scannet --save_dir=data/processed/scannet
+  deps:
+  - path: mix3d/datasets/preprocessing/scannet_preprocessing.py
+    md5: 5dc8b5c780b52387a0a089dc6ce2b975
+    size: 8282
+  outs:
+  - path: data/processed/scannet/color_mean_std.yaml
+    md5: b4133226ce4355042a07b3103ae36268
+    size: 137
+  - path: data/processed/scannet/label_database.yaml
+    md5: 0f2522b2deff825ba3a97451a05fe2ca
+    size: 2920
+  - path: data/processed/scannet/test
+    md5: 4294fd8db8bfebdbe65fbe86b1733a72.dir
+    size: 654429908
+    nfiles: 100
+  - path: data/processed/scannet/test_database.yaml
+    md5: 82a2c6adc0950a426bf2a674ee0cb34e
+    size: 19177
+  - path: data/processed/scannet/train
+    md5: 748fadadfd3559bd373ebb9359302390.dir
+    size: 7671558524
+    nfiles: 1201
+  - path: data/processed/scannet/train_database.yaml
+    md5: 09cc6652f21f5a0afaaebdc4d546c5db
+    size: 945128
+  - path: data/processed/scannet/train_validation_database.yaml
+    md5: cd7d908371e8ac7e33f08a0c8694dd53
+    size: 1192350
+  - path: data/processed/scannet/validation
+    md5: 317bfecc9976716a929042f194935e49.dir
+    size: 2179824928
+    nfiles: 312
+  - path: data/processed/scannet/validation_database.yaml
+    md5: 0702f5f6ab1d54e77c9f3877561b6e08
+    size: 247222
+scannet_instance:
+  cmd: poetry run python mix3d/datasets/preprocessing/scannet_preprocessing.py make_instance_database
+    --train_database_path=data/processed/scannet/train_database.yaml --git_repo=data/raw/scannet/ScanNet
+    --data_dir=data/raw/scannet/scannet --save_dir=data/processed/scannet
+  deps:
+  - path: data/processed/scannet/train_database.yaml
+    md5: 909669279c3b71f53cc69322773a5449
+    size: 805816
+  - path: mix3d/datasets/preprocessing/scannet_preprocessing.py
+    md5: 57acaebc54bd977e8e0629d54dd5a6e8
+    size: 7845
+  outs:
+  - path: data/processed/scannet/instance_database.yaml
+    md5: 72f2618457439e153a1cd253456fae16
+    size: 7841040
+  - path: data/processed/scannet/instances
+    md5: 5f1c0421ba4d8329f35f42c8ae4373cb.dir
+    size: 7676466940
+    nfiles: 39548
+rio:
+  cmd: poetry run python mix3d/datasets/preprocessing/rio_preprocessing.py preprocess
+    --data_dir=data/raw/rio/rio --save_dir=data/processed/rio --git_repo=data/raw/rio/3RScan
+    --label_db=data/processed/scannet/label_database.yaml
+  deps:
+  - path: data/processed/scannet/label_database.yaml
+    md5: 0f2522b2deff825ba3a97451a05fe2ca
+    size: 2920
+  - path: mix3d/datasets/preprocessing/rio_preprocessing.py
+    md5: 5e057b356a1cac02c03efc0d6b199ea3
+    size: 4417
+  outs:
+  - path: data/processed/rio/test
+    md5: ded35058beb923d277808715ae7bff8b.dir
+    size: 122954076
+    nfiles: 45
+  - path: data/processed/rio/test_database.yaml
+    md5: 2abc50d76e79136375137fd3ed296910
+    size: 8199
+  - path: data/processed/rio/train
+    md5: 28b2f4c1af584cd239e7d30783980e30.dir
+    size: 1066204308
+    nfiles: 384
+  - path: data/processed/rio/train_database.yaml
+    md5: e61397cc308d32564a8e71cced6a152b
+    size: 70315
+  - path: data/processed/rio/validation
+    md5: 6f00a8c1dc710ea2a784c6120e53766b.dir
+    size: 112521852
+    nfiles: 46
+  - path: data/processed/rio/validation_database.yaml
+    md5: 51b7c6eb2e56ee0a7daced2e637d3437
+    size: 8652
+matterport:
+  cmd: poetry run python mix3d/datasets/preprocessing/matterport_preprocessing.py
+    preprocess --data_dir=data/raw/matterport/v1 --save_dir=data/processed/matterport
+    --git_repo=data/raw/matterport/Matterport --label_db=data/processed/scannet/label_database.yaml
+  deps:
+  - path: data/processed/scannet/label_database.yaml
+    md5: 0f2522b2deff825ba3a97451a05fe2ca
+    size: 2920
+  - path: mix3d/datasets/preprocessing/matterport_preprocessing.py
+    md5: 23d2e297f261e652d091c48ea8365342
+    size: 7002
+  outs:
+  - path: data/processed/matterport/test
+    md5: bf8a734d78578d1d3070b7dc8d5c4f0d.dir
+    size: 2106911900
+    nfiles: 406
+  - path: data/processed/matterport/test_database.yaml
+    md5: 0863c615a52830bb291233265d86e913
+    size: 102466
+  - path: data/processed/matterport/train
+    md5: aae0669136a1842da3aac9b2a0cea0db.dir
+    size: 9854708720
+    nfiles: 1554
+  - path: data/processed/matterport/train_database.yaml
+    md5: b7b71a3d192b7b9b7ef34ef4712c0af5
+    size: 393775
+  - path: data/processed/matterport/validation
+    md5: de124b4a10cbf8614f3511788c38930f.dir
+    size: 1449955220
+    nfiles: 234
+  - path: data/processed/matterport/validation_database.yaml
+    md5: 0cba81a6d81a62c081bd11dcdb880d02
+    size: 60448
+semantic_kitti:
+  cmd: poetry run python mix3d/datasets/preprocessing/semantic_kitti_preprocessing.py
+    preprocess_sequential --git_repo=data/raw/semantic-kitti-api --data_dir=data/raw/SemanticKITTI/dataset
+    --save_dir=data/processed/semantic_kitti
+  deps:
+  - path: mix3d/datasets/preprocessing/semantic_kitti_preprocessing.py
+    md5: 2f392fee48ab3d761451f048aae40d58
+    size: 5847
+  outs:
+  - path: data/processed/semantic_kitti/label_database.yaml
+    md5: 6aa4704d48ab7398bab65a22133826ec
+    size: 1404
+  - path: data/processed/semantic_kitti/test
+    md5: 6711abc69e4b5f9f05e42a5759954eeb.dir
+    size: 39201355808
+    nfiles: 20351
+  - path: data/processed/semantic_kitti/test_database.yaml
+    md5: 487d8f659817ea8305678a006ba5f56a
+    size: 9536961
+  - path: data/processed/semantic_kitti/train
+    md5: 96328bdc492a02324ab20c85586a59c5.dir
+    size: 56391877408
+    nfiles: 19130
+  - path: data/processed/semantic_kitti/train_database.yaml
+    md5: 2537bc731579ea902ca5e881392f70bd
+    size: 10531033
+  - path: data/processed/semantic_kitti/validation
+    md5: 98178e0d395bd8f274b99f7c64df3600.dir
+    size: 11978430576
+    nfiles: 4071
+  - path: data/processed/semantic_kitti/validation_database.yaml
+    md5: c3ae463ec1d1412e2e3445f404691526
+    size: 2263455
