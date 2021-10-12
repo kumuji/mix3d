@@ -6,7 +6,7 @@ Alexey Nekrasov*, Jonas Schult*, Or Litany, Bastian Leibe, Francis Engelmann
 
 ## News
 
-* **6. October 2021**: Mix3D accepted for oral presentation at [3DV](https://3dv2021.surrey.ac.uk/) 2021 [[arXiv]](https://arxiv.org/abs/2110.02210)
+* **6. October 2021**: Mix3D accepted for oral presentation at [3DV](https://3dv2021.surrey.ac.uk/) 2021. Paper on [[arXiv]](https://arxiv.org/abs/2110.02210).
 * **30. July 2021**: Mix3D ranks 1st on the [ScanNet](http://kaldir.vc.in.tum.de/scannet_benchmark/semantic_label_3d) semantic labeling benchmark.
 
 ![Learderboard](./docs/scannet_benchmark_screenshot.png)
