@@ -1,6 +1,5 @@
-<div align="center">
 # Mix3D: Out-of-Context Data Augmentation for 3D Scenes (3DV 2021)
-
+<div align="center">
 Alexey Nekrasov*, Jonas Schult*, Or Litany, Bastian Leibe, Francis Engelmann
 
 Mix3D is a data augmentation technique for 3D segmentation methods that improves generalization.
