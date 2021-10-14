@@ -1,0 +1,36 @@
+diff --git a/datasets/SemanticKitti.py b/datasets/SemanticKitti.py
+index 7a781e9..7d77bd4 100644
+--- a/datasets/SemanticKitti.py
++++ b/datasets/SemanticKitti.py
+@@ -418,6 +418,10 @@ class SemanticKittiDataset(PointCloudDataset):
+         # Concatenate batch
+         ###################
+ 
++        # MOVE TO CENTER FOR MIX3D
++        for p_i in range(len(p_list)):
++            p_list[p_i] -= p_list[p_i].mean(axis=0)
++
+         stacked_points = np.concatenate(p_list, axis=0)
+         features = np.concatenate(f_list, axis=0)
+         labels = np.concatenate(l_list, axis=0)
+@@ -427,6 +431,15 @@ class SemanticKittiDataset(PointCloudDataset):
+         scales = np.array(s_list, dtype=np.float32)
+         rots = np.stack(R_list, axis=0)
+ 
++        # roughly 20% non-merged
++        remainder = (stack_lengths.shape[0] - 2) // 4
++
++        if (stack_lengths.shape[0] - remainder) % 2 == 1:
++            remainder += 1
++
++        combined_lengths = np.sum(np.reshape(stack_lengths[:-remainder], (-1, 2)), axis=1)
++        stack_lengths = np.concatenate([combined_lengths, stack_lengths[-remainder:]]).astype(np.int32)
++
+         # Input features (Use reflectance, input height or all coordinates)
+         stacked_features = np.ones_like(stacked_points[:, :1], dtype=np.float32)
+         if self.config.in_features_dim == 1:
+@@ -1453,3 +1466,4 @@ def debug_class_w(dataset, loader):
+             print(s)
+             i += 1
+ 
++

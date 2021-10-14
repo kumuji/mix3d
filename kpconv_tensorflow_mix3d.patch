@@ -1,0 +1,212 @@
+diff --git a/datasets/S3DIS.py b/datasets/S3DIS.py
+index 78bba0a..e5eac6f 100755
+--- a/datasets/S3DIS.py
++++ b/datasets/S3DIS.py
+@@ -600,20 +600,34 @@ class S3DISDataset(Dataset):
+ 
+                 # In case batch is full, yield it and reset it
+                 if batch_n + n > self.batch_limit and batch_n > 0:
+-
+-                    yield (np.concatenate(p_list, axis=0),
+-                           np.concatenate(c_list, axis=0),
+-                           np.concatenate(pl_list, axis=0),
+-                           np.array([tp.shape[0] for tp in p_list]),
+-                           np.concatenate(pi_list, axis=0),
+-                           np.array(ci_list, dtype=np.int32))
+-
+-                    p_list = []
+-                    c_list = []
+-                    pl_list = []
+-                    pi_list = []
+-                    ci_list = []
+-                    batch_n = 0
++                    if len(p_list) % 2 == 1:
++                        yield (np.concatenate(p_list[:-1], axis=0),
++                               np.concatenate(c_list[:-1], axis=0),
++                               np.concatenate(pl_list[:-1], axis=0),
++                               np.array([tp.shape[0] for tp in p_list[:-1]]),
++                               np.concatenate(pi_list[:-1], axis=0),
++                               np.array(ci_list[:-1], dtype=np.int32))
++
++                        p_list = [p_list[-1]]
++                        c_list = [c_list[-1]]
++                        pl_list = [pl_list[-1]]
++                        pi_list = [pi_list[-1]]
++                        ci_list = [ci_list[-1]]
++                        batch_n = pl_list[-1].shape[0]
++                    else:
++                        yield (np.concatenate(p_list, axis=0),
++                               np.concatenate(c_list, axis=0),
++                               np.concatenate(pl_list, axis=0),
++                               np.array([tp.shape[0] for tp in p_list]),
++                               np.concatenate(pi_list, axis=0),
++                               np.array(ci_list, dtype=np.int32))
++
++                        p_list = []
++                        c_list = []
++                        pl_list = []
++                        pi_list = []
++                        ci_list = []
++                        batch_n = 0
+ 
+                 # Add data to current batch
+                 if n > 0:
+@@ -626,13 +640,21 @@ class S3DISDataset(Dataset):
+                 # Update batch size
+                 batch_n += n
+ 
+-            if batch_n > 0:
+-                yield (np.concatenate(p_list, axis=0),
+-                       np.concatenate(c_list, axis=0),
+-                       np.concatenate(pl_list, axis=0),
+-                       np.array([tp.shape[0] for tp in p_list]),
+-                       np.concatenate(pi_list, axis=0),
+-                       np.array(ci_list, dtype=np.int32))
++            if batch_n > 1:
++                if len(p_list) % 2 == 1 and len(p_list) != 1:
++                    yield (np.concatenate(p_list[:-1], axis=0),
++                           np.concatenate(c_list[:-1], axis=0),
++                           np.concatenate(pl_list[:-1], axis=0),
++                           np.array([tp.shape[0] for tp in p_list[:-1]]),
++                           np.concatenate(pi_list[:-1], axis=0),
++                           np.array(ci_list[:-1], dtype=np.int32))
++                else:
++                    yield (np.concatenate(p_list, axis=0),
++                           np.concatenate(c_list, axis=0),
++                           np.concatenate(pl_list, axis=0),
++                           np.array([tp.shape[0] for tp in p_list]),
++                           np.concatenate(pi_list, axis=0),
++                           np.array(ci_list, dtype=np.int32))
+ 
+         ###################
+         # Choose generators
+@@ -676,6 +698,15 @@ class S3DISDataset(Dataset):
+             # First add a column of 1 as feature for the network to be able to learn 3D shapes
+             stacked_features = tf.ones((tf.shape(stacked_points)[0], 1), dtype=tf.float32)
+ 
++
++            # IN BATCH GENERATOR MAKE SURE THAT ALWAYS EVEN
++            # last two spheres are never merged!
++            combined_lengths = tf.reduce_sum(tf.reshape(stacks_lengths[:-2], (-1, 2)), axis=1)
++            stacks_lengths = tf.concat([combined_lengths, stacks_lengths[-2:]], 0)
++
++            batch_inds = self.tf_get_batch_inds(stacks_lengths)
++
++
+             # Get coordinates and colors
+             stacked_original_coordinates = stacked_colors[:, 3:]
+             stacked_colors = stacked_colors[:, :3]
+@@ -1085,3 +1116,4 @@ class S3DISDataset(Dataset):
+ 
+ 
+ 
++
+diff --git a/datasets/Scannet.py b/datasets/Scannet.py
+index 91c7097..10b04d4 100755
+--- a/datasets/Scannet.py
++++ b/datasets/Scannet.py
+@@ -144,6 +144,7 @@ class ScannetDataset(Dataset):
+         self.train_path = join(self.path, 'training_points')
+         self.test_path = join(self.path, 'test_points')
+ 
++
+         # Prepare ply files
+         self.prepare_pointcloud_ply()
+ 
+@@ -752,19 +753,34 @@ class ScannetDataset(Dataset):
+ 
+                 # In case batch is full, yield it and reset it
+                 if batch_n + n > self.batch_limit and batch_n > 0:
+-                    yield (np.concatenate(p_list, axis=0),
+-                           np.concatenate(c_list, axis=0),
+-                           np.concatenate(pl_list, axis=0),
+-                           np.array([tp.shape[0] for tp in p_list]),
+-                           np.concatenate(pi_list, axis=0),
+-                           np.array(ci_list, dtype=np.int32))
+-
+-                    p_list = []
+-                    c_list = []
+-                    pl_list = []
+-                    pi_list = []
+-                    ci_list = []
+-                    batch_n = 0
++                    if len(p_list) % 2 == 0:
++                        yield (np.concatenate(p_list[:-1], axis=0),
++                               np.concatenate(c_list[:-1], axis=0),
++                               np.concatenate(pl_list[:-1], axis=0),
++                               np.array([tp.shape[0] for tp in p_list[:-1]]),
++                               np.concatenate(pi_list[:-1], axis=0),
++                               np.array(ci_list[:-1], dtype=np.int32))
++
++                        p_list = [p_list[-1]]
++                        c_list = [c_list[-1]]
++                        pl_list = [pl_list[-1]]
++                        pi_list = [pi_list[-1]]
++                        ci_list = [ci_list[-1]]
++                        batch_n = pl_list[-1].shape[0]
++                    else:
++                        yield (np.concatenate(p_list, axis=0),
++                               np.concatenate(c_list, axis=0),
++                               np.concatenate(pl_list, axis=0),
++                               np.array([tp.shape[0] for tp in p_list]),
++                               np.concatenate(pi_list, axis=0),
++                               np.array(ci_list, dtype=np.int32))
++
++                        p_list = []
++                        c_list = []
++                        pl_list = []
++                        pi_list = []
++                        ci_list = []
++                        batch_n = 0
+ 
+                 # Add data to current batch
+                 if n > 0:
+@@ -777,13 +793,21 @@ class ScannetDataset(Dataset):
+                 # Update batch size
+                 batch_n += n
+ 
+-            if batch_n > 0:
+-                yield (np.concatenate(p_list, axis=0),
+-                       np.concatenate(c_list, axis=0),
+-                       np.concatenate(pl_list, axis=0),
+-                       np.array([tp.shape[0] for tp in p_list]),
+-                       np.concatenate(pi_list, axis=0),
+-                       np.array(ci_list, dtype=np.int32))
++            if batch_n > 1:
++                if len(p_list) % 2 == 0 and len(p_list) != 0:
++                    yield (np.concatenate(p_list[:-1], axis=0),
++                           np.concatenate(c_list[:-1], axis=0),
++                           np.concatenate(pl_list[:-1], axis=0),
++                           np.array([tp.shape[0] for tp in p_list[:-1]]),
++                           np.concatenate(pi_list[:-1], axis=0),
++                           np.array(ci_list[:-1], dtype=np.int32))
++                else:
++                    yield (np.concatenate(p_list, axis=0),
++                           np.concatenate(c_list, axis=0),
++                           np.concatenate(pl_list, axis=0),
++                           np.array([tp.shape[0] for tp in p_list]),
++                           np.concatenate(pi_list, axis=0),
++                           np.array(ci_list, dtype=np.int32))
+ 
+         ###################
+         # Choose generators
+@@ -826,6 +850,14 @@ class ScannetDataset(Dataset):
+             # First add a column of 1 as feature for the network to be able to learn 3D shapes
+             stacked_features = tf.ones((tf.shape(stacked_points)[0], 1), dtype=tf.float32)
+ 
++            # 2 UNMERGED
++            # IN BATCH GENERATOR MAKE SURE THAT ALWAYS EVEN
++            # last two spheres are never merged!
++            combined_lengths = tf.reduce_sum(tf.reshape(stacks_lengths[:-2], (-1, 2)), axis=1)
++            stacks_lengths = tf.concat([combined_lengths, stacks_lengths[-2:]], 0)
++
++            batch_inds = self.tf_get_batch_inds(stacks_lengths)
++
+             # Get coordinates and colors
+             stacked_original_coordinates = stacked_colors[:, 3:]
+             stacked_colors = stacked_colors[:, :3]
+@@ -1235,3 +1267,4 @@ class ScannetDataset(Dataset):
+         print('\nFinished\n\n')
+ 
+ 
++

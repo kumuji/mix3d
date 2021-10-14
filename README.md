@@ -31,6 +31,8 @@ Mix3D is a data augmentation technique for 3D segmentation methods that improves
 This repository contains the code for the analysis experiments of section `4.2. Motivation and Analysis Experiments` from the paper
 For the ScanNet benchmark and Table 1 (main paper) we use the original [SpatioTemporalSegmentation-Scannet](https://github.com/chrischoy/SpatioTemporalSegmentation-Scannet) code.
 To add Mix3D to the original MinkowskiNet codebase, we provide the patch file `SpatioTemporalSegmentation.patch`.
+With the patch file `kpconv_tensorflow_mix3d.patch`, you can add Mix3D to the [official TensorFlow code release of KPConv](https://github.com/HuguesTHOMAS/KPConv) on ScanNet and S3DIS.
+Analogously, you can patch the [official PyTorch reimplementation of KPConv](https://github.com/HuguesTHOMAS/KPConv-PyTorch) with the patch file `kpconv_pytorch_mix3d.patch`.
 Check the supplementary for more details.
 
 
