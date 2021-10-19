@@ -27,8 +27,6 @@ class VoxelizeCollate:
             batch = make_crops(batch)
         if ("train" in self.mode) and self.very_small_crops:
             batch = make_crops(batch)
-        if ("train" in self.mode) or self.batch_instance:
-            batch = batch_instances(batch)
         return voxelize(batch, self.ignore_label, self.voxel_size)
 
 
