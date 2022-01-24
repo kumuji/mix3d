@@ -160,8 +160,8 @@ def voxelize(batch, ignore_label, voxel_size):
         original_labels.append(sample[2])
 
         coords = np.floor(sample[0] / voxel_size)
-        voxelization_dict.update({"coords": coords, "feats": sample[1]})
-        unique_map, inverse_map = ME.utils.sparse_quantize(**voxelization_dict)
+        voxelization_dict.update({"coordinates": coords, "features": sample[1]})
+        _, _, unique_map, inverse_map = ME.utils.sparse_quantize(**voxelization_dict)
         inverse_maps.append(inverse_map)
 
         sample_coordinates = coords[unique_map]

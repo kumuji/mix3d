@@ -395,7 +395,8 @@ class STRes16UNet18A(STRes16UNet18):
 
 
 class STResTesseract16UNetBase(STRes16UNetBase):
-    CONV_TYPE = ConvType.HYPERCUBE
+    # CONV_TYPE = ConvType.HYPERCUBE
+    pass
 
 
 class STResTesseract16UNet18A(STRes16UNet18A, STResTesseract16UNetBase):

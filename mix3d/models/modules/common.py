@@ -51,16 +51,16 @@ class ConvType(Enum):
 # Covert the ConvType var to a RegionType var
 conv_to_region_type = {
     # kernel_size = [k, k, k, 1]
-    ConvType.HYPERCUBE: ME.RegionType.HYPERCUBE,
-    ConvType.SPATIAL_HYPERCUBE: ME.RegionType.HYPERCUBE,
-    ConvType.SPATIO_TEMPORAL_HYPERCUBE: ME.RegionType.HYPERCUBE,
-    ConvType.HYPERCROSS: ME.RegionType.HYPERCROSS,
-    ConvType.SPATIAL_HYPERCROSS: ME.RegionType.HYPERCROSS,
-    ConvType.SPATIO_TEMPORAL_HYPERCROSS: ME.RegionType.HYPERCROSS,
-    ConvType.SPATIAL_HYPERCUBE_TEMPORAL_HYPERCROSS: ME.RegionType.HYBRID,
+    ConvType.HYPERCUBE: ME.RegionType.HYPER_CUBE,
+    ConvType.SPATIAL_HYPERCUBE: ME.RegionType.HYPER_CUBE,
+    ConvType.SPATIO_TEMPORAL_HYPERCUBE: ME.RegionType.HYPER_CUBE,
+    ConvType.HYPERCROSS: ME.RegionType.HYPER_CROSS,
+    ConvType.SPATIAL_HYPERCROSS: ME.RegionType.HYPER_CROSS,
+    ConvType.SPATIO_TEMPORAL_HYPERCROSS: ME.RegionType.HYPER_CROSS,
+    ConvType.SPATIAL_HYPERCUBE_TEMPORAL_HYPERCROSS: ME.RegionType.HYPER_CUBE, # change from HYBRID
 }
 
-int_to_region_type = {m.value: m for m in ME.RegionType}
+int_to_region_type = {m: ME.RegionType(m) for m in range(3)}
 
 
 def convert_region_type(region_type):
@@ -105,7 +105,7 @@ def convert_conv_type(conv_type, kernel_size, D):
         # Define the CUBIC conv kernel for spatial dims and CROSS conv for temp dim
         axis_types = [ME.RegionType.HYPERCUBE,] * 3
         if D == 4:
-            axis_types.append(ME.RegionType.HYPERCROSS)
+            axis_types.append(ME.RegionType.HYPER_CROSS)
     return region_type, axis_types, kernel_size
 
 
@@ -126,7 +126,7 @@ def conv(
         stride,
         dilation,
         region_type=region_type,
-        axis_types=axis_types,
+        axis_types=None,
         dimension=D,
     )
 
@@ -136,7 +136,7 @@ def conv(
         kernel_size=kernel_size,
         stride=stride,
         dilation=dilation,
-        has_bias=bias,
+        bias=bias,
         kernel_generator=kernel_generator,
         dimension=D,
     )

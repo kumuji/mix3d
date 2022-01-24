@@ -39,8 +39,7 @@ class SemanticSegmentation(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         data, target = batch
-        data = ME.SparseTensor(coords=data.coordinates, feats=data.features)
-        data.to(self.device)
+        data = ME.SparseTensor(coordinates=data.coordinates, features=data.features, device=self.device)
         output = self.forward(data)
         loss = self.criterion(output.F, target).unsqueeze(0)
 
@@ -52,8 +51,7 @@ class SemanticSegmentation(pl.LightningModule):
         data, target = batch
         inverse_maps = data.inverse_maps
         original_labels = data.original_labels
-        data = ME.SparseTensor(coords=data.coordinates, feats=data.features)
-        data.to(self.device)
+        data = ME.SparseTensor(coordinates=data.coordinates, features=data.features, device=self.device)
         output = self.forward(data)
         loss = self.criterion(output.F, target).unsqueeze(0)
 
@@ -94,8 +92,7 @@ class SemanticSegmentation(pl.LightningModule):
         data, target = batch
         inverse_maps = data.inverse_maps
         original_labels = data.original_labels
-        data = ME.SparseTensor(coords=data.coordinates, feats=data.features)
-        data.to(self.device)
+        data = ME.SparseTensor(coordinates=data.coordinates, features=data.features, device=self.device)
         output = self.forward(data)
         loss = 0
         if original_labels[0].size > 0:
