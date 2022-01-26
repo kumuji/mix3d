@@ -16,7 +16,7 @@ Mix3D is a data augmentation technique for 3D segmentation methods that improves
 </div>
 <br><br>
 
-[[Project Webpage](https://nekrasov.dev/mix3d)] [[arXiv](https://arxiv.org/abs/2110.02210)]
+[[Project Webpage](https://nekrasov.dev/mix3d)] [[arXiv](https://arxiv.org/abs/2110.02210)] [[Demo](https://mix3d-demo.nekrasov.dev/)]
 
 ## News
 
