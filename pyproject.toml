@@ -31,11 +31,7 @@ classifiers=[
 [tool.poetry.dependencies]
 # main parts
 python = "^3.7"
-torch = "^1.5.0"
-torchvision = "^0.6.0"
-pytorch-lightning = "^1.1.1"
-MinkowskiEngine = "^0.4.3"
-open3d = "0.9.0"
+open3d = "^0.15.2"
 volumentations = "^0.1.0"
 albumentations = "^0.4.5"
 plyfile = "^0.7.1"
