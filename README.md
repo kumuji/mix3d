@@ -79,15 +79,34 @@ Check the supplementary for more details.
 ### Dependencies
 The main dependencies of the project are the following:
 ```yaml
-python: 3.7
-cuda: 10.1
+python: >=3.7
+cuda: 11.3
 ```
-For others, the project uses the [poetry](https://github.com/python-poetry/poetry) dependency management package.
-Everything can be installed with the command:
-```yaml
-poetry install
+The project uses the [poetry](https://github.com/python-poetry/poetry) dependency management package for everything except MinkowskiEngine and PyTorch.
+Using `conda`, and with `CUDA 11.3` installed, everything can be installed with the following commands:
+```bash
+conda create --name mix3d
+conda activate mix3d
+
+conda install python=3.9
+python -m pip install poetry
+python -m poetry install
+
+conda install openblas-devel -c anaconda
+python -m pip install torch==1.10.2 torchvision --extra-index-url https://download.pytorch.org/whl/cu113
+python -m pip install pytorch-lightning
+python -m pip install git+https://github.com/NVIDIA/MinkowskiEngine@2f31bc51e0abdf89ed20730e531480df1b2cc64a -v --no-deps --install-option="--blas_include_dirs=${CONDA_PREFIX}/include" --install-option="--blas=openblas"
 ```
-Check `scripts/init.bash` for more details.
+
+#### Notes
+- `MinkowskiEngine 0.5.4` doesn't compile with `PyTorch 1.11`.
+- Make sure your current environment uses `CUDA 11.3`.
+- `MinkowskiEngine` is currently not installed via `poetry` because it doesn't support `--install-option` (https://github.com/python-poetry/poetry/issues/845).
+- `PyTorch` is currently not installed via `poetry` because specifying a custom source is broken (https://github.com/python-poetry/poetry/issues/4704).
+- `PyTorch` can't be installed via `conda` because it conflicts with `openblas-devel`.
+- `PyTorch` 1.10.2 is not available for Python `3.10`.
+
+Check `scripts/init.bash` for more details (outdated).
 
 ### Data preprocessing
 After the dependencies are installed, it is important to run the preprocessing scripts.

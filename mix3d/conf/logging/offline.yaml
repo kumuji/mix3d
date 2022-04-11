@@ -1,8 +1,7 @@
 # @package _group_
-- _target_: pytorch_lightning.loggers.NeptuneLogger
-  project_name: ${general.workspace}/${general.project_name}
-  experiment_name: ${general.experiment_name}
-  offline_mode: true
+- _target_: pytorch_lightning.loggers.wandb.WandbLogger
+  project: ${general.project_name}
+  offline: true
 
 - _target_: pytorch_lightning.loggers.TensorBoardLogger
   name: ${general.experiment_id}
