@@ -135,3 +135,5 @@ dmypy.json
 
 # nfs silly rename files
 .nfs*
+
+wandb/
