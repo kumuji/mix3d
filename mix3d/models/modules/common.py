@@ -103,7 +103,7 @@ def convert_conv_type(conv_type, kernel_size, D):
         assert D == 4
     elif conv_type == ConvType.SPATIAL_HYPERCUBE_TEMPORAL_HYPERCROSS:
         # Define the CUBIC conv kernel for spatial dims and CROSS conv for temp dim
-        axis_types = [ME.RegionType.HYPERCUBE,] * 3
+        axis_types = [ME.RegionType.HYPER_CUBE,] * 3
         if D == 4:
             axis_types.append(ME.RegionType.HYPER_CROSS)
     return region_type, axis_types, kernel_size
@@ -169,7 +169,7 @@ def conv_tr(
         kernel_size=kernel_size,
         stride=upsample_stride,
         dilation=dilation,
-        has_bias=bias,
+        bias=bias,
         kernel_generator=kernel_generator,
         dimension=D,
     )

@@ -52,7 +52,7 @@ class MeanField(HighDimensionalModel):
             nchannels,
             nchannels,
             kernel_size=config.wrapper_kernel_size,
-            has_bias=False,
+            bias=False,
             region_type=convert_region_type(config.wrapper_region_type),
             dimension=D,
         )
