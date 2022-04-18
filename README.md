@@ -18,8 +18,13 @@ Mix3D is a data augmentation technique for 3D segmentation methods that improves
 
 [[Project Webpage](https://nekrasov.dev/mix3d)] [[arXiv](https://arxiv.org/abs/2110.02210)] [[Demo](https://mix3d-demo.nekrasov.dev/)]
 
+## Demo
+
+We also host a [demo](https://mix3d-demo.nekrasov.dev/) page, where you can upload your scene and in 30 minutes receive a prediction from the model! We created it to collect the most challenging scenes that could be captured in the wild and test the limits of the current SOTA models.   
+
 ## News
 
+* **18. April 2022**: For the last Minkowski Engine release use [branch](https://github.com/kumuji/mix3d/tree/dev_MinkowskiEngine054) or [pull request](https://github.com/kumuji/mix3d/pull/11)
 * **12. October 2021**: Code released.
 * **6. October 2021**: Mix3D accepted for oral presentation at [3DV](https://3dv2021.surrey.ac.uk/) 2021. Paper on [[arXiv]](https://arxiv.org/abs/2110.02210).
 * **30. July 2021**: Mix3D ranks 1st on the [ScanNet](http://kaldir.vc.in.tum.de/scannet_benchmark/semantic_label_3d) semantic labeling benchmark.
